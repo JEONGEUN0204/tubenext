@@ -32,7 +32,7 @@
       "status": "completed",
       "started_at": "2026-09-21T23:42:05+0900",
       "summary": "Claude 호출 전 게이트 함수(src/services/claude.ts의 isLlmEnabled(): boolean) — process.env.LLM_MODE를 소문자로 바꿔 \"off\"면 false(수동 스위치), ANTHROPIC_API_KEY가 없거나 trim 후 빈 문자열이면 false, 그 외 true(LLM_MODE 미설정 기본값은 켜짐). process.env는 youtube.ts의 apiKey()와 같은 이유로 모듈 최상위·캐시 변수 없이 호출 시점에만 읽고, 키 값은 Boolean으로만 바꿔 반환값·로그·에러 메시지에 노출하지 않는다. extractProfile·generateIdeas의 시그니처와 에러 처리는 그대로. TDD로 tests/claude.test.ts에 describe(\"isLlmEnabled\") 블록 선작성(vi.stubEnv/unstubAllEnvs, 기존 SDK mock·fetch 가드 훅 무수정), 8개 추가해 총 176개 통과 (lint·build·test 모두 통과)",
-      "completed_at": "2026-09-21T23:44:37+0900"
+      "completed_at": "2026-09-21T23:45:45+0900"
     },
     {
       "step": 4,
