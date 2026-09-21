@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import AnalyzeForm from "@/components/AnalyzeForm";
 import ChannelProfileCard from "@/components/ChannelProfileCard";
 import IdeaCard from "@/components/IdeaCard";
+import ModeBadge from "@/components/ModeBadge";
 import ViralVideoList from "@/components/ViralVideoList";
 import type { AnalyzeResponse } from "@/types";
 
@@ -103,7 +104,17 @@ export default function Home() {
       {status === "success" && result && (
         <div className="mt-8 space-y-8">
           <section>
-            <h2 className="text-sm font-medium text-neutral-400">채널 프로필</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-medium text-neutral-400">
+                채널 프로필
+              </h2>
+              <ModeBadge mode={result.mode.profile} />
+            </div>
+            {result.mode.profile === "rule" && (
+              <p className="mt-2 text-sm text-neutral-500">
+                Claude를 쓰지 못해 최근 제목의 반복 키워드로 분석했습니다.
+              </p>
+            )}
             <div className="mt-3">
               <ChannelProfileCard
                 channel={result.channel}
@@ -125,7 +136,20 @@ export default function Home() {
           </section>
 
           <section>
-            <h2 className="text-sm font-medium text-neutral-400">추천 기획안</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-medium text-neutral-400">
+                추천 기획안
+              </h2>
+              {result.ideas.length > 0 && (
+                <ModeBadge mode={result.mode.ideas} />
+              )}
+            </div>
+            {result.ideas.length > 0 && result.mode.ideas === "rule" && (
+              <p className="mt-2 text-sm text-neutral-500">
+                Claude를 쓰지 못해 바이럴 영상 수치를 템플릿에 넣어
+                만들었습니다. 제목과 훅은 그대로 쓰지 말고 다듬어서 쓰세요.
+              </p>
+            )}
             {result.ideas.length === 0 ? (
               <p className="mt-2 text-sm text-neutral-500">
                 기획안 생성에 실패했습니다. 다시 시도해주세요.
