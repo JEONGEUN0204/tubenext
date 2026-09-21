@@ -13,7 +13,10 @@
     {
       "step": 1,
       "name": "rule-profile",
-      "status": "pending"
+      "status": "completed",
+      "started_at": "2026-09-21T23:33:06+0900",
+      "summary": "LLM 없이 도는 규칙 기반 채널 프로필 추출기(src/lib/rule-profile.ts) — buildRuleProfile(channel, videos): ProfileCore. searchKeywords는 step 0의 extractKeywords에 채널명 토큰을 excludeTokens로 넘겨 최대 3개(모자라면 그대로 비움), formats는 쇼츠 과반 우선 + durationSec 중앙값 구간 라벨 1개에 제목 패턴 라벨(숫자·시리즈·질문형) 최대 3개를 더해 1~4개, niche/audience는 키워드 템플릿 문장이고 키워드 0개·videos 빈 배열이면 근거 부족 문구와 [\"분석할 영상 없음\"]. TDD로 tests/rule-profile.test.ts 선작성, 37개 추가해 총 144개 통과 (lint·build·test 모두 통과)",
+      "completed_at": "2026-09-21T23:36:33+0900"
     },
     {
       "step": 2,
