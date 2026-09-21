@@ -2,11 +2,39 @@
   "project": "TubeNext",
   "phase": "1-llm-fallback",
   "steps": [
-    { "step": 0, "name": "keyword-extract", "status": "pending" },
-    { "step": 1, "name": "rule-profile", "status": "pending" },
-    { "step": 2, "name": "rule-ideas", "status": "pending" },
-    { "step": 3, "name": "llm-toggle", "status": "pending" },
-    { "step": 4, "name": "fallback-route", "status": "pending" },
-    { "step": 5, "name": "fallback-ui", "status": "pending" }
-  ]
+    {
+      "step": 0,
+      "name": "keyword-extract",
+      "status": "completed",
+      "started_at": "2026-09-21T23:27:49+0900",
+      "summary": "의존성 0의 한국어 제목 키워드 추출기(src/lib/keywords.ts) — tokenizeTitle(비한글·영문·숫자 제거, 길이1·숫자만·STOPWORDS 필터), tokenizeTitles(전체 토큰 집합 seen 기반 2패스 조사 정규화: 2자 조사는 길이4+·어간2+면 무조건, 1자 조사는 어간이 seen에 있을 때만 → 고양이·김치찌개 보호), extractKeywords(excludeTokens 제외, 2회+ 바이그램 우선 → 유니그램, 안정 정렬 tie-break, 포함 중복 스킵, 기본 limit 3). TDD로 tests/keywords.test.ts 선작성, 22개 추가해 총 107개 통과 (lint·build·test 모두 통과)",
+      "completed_at": "2026-09-21T23:33:00+0900"
+    },
+    {
+      "step": 1,
+      "name": "rule-profile",
+      "status": "pending"
+    },
+    {
+      "step": 2,
+      "name": "rule-ideas",
+      "status": "pending"
+    },
+    {
+      "step": 3,
+      "name": "llm-toggle",
+      "status": "pending"
+    },
+    {
+      "step": 4,
+      "name": "fallback-route",
+      "status": "pending"
+    },
+    {
+      "step": 5,
+      "name": "fallback-ui",
+      "status": "pending"
+    }
+  ],
+  "created_at": "2026-09-21T23:27:49+0900"
 }
