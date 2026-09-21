@@ -37,7 +37,10 @@
     {
       "step": 4,
       "name": "analyze-route",
-      "status": "pending"
+      "status": "completed",
+      "started_at": "2026-09-21T22:46:45+0900",
+      "summary": "분석 파이프라인 오케스트레이션 라우트(src/app/api/analyze/route.ts) — parseChannelInput→fetchChannel→fetchRecentVideos(5개 미만 차단)→summarizeUploads+extractProfile→searchViralCandidates→rankViral→generateIdeas를 ARCHITECTURE.md 순서로 엮고, AppError code를 400/404/422/429/502로, 그 외 예외는 원본 메시지를 숨긴 500으로 번역. generateIdeas 실패만 삼켜 ideas=[]로 부분 응답(maxDuration 120). TDD로 tests/analyze-route.test.ts 선작성(services만 mock), 11개 추가해 총 85개 통과 (lint·build·test 모두 통과)",
+      "completed_at": "2026-09-21T22:50:12+0900"
     },
     {
       "step": 5,
