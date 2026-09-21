@@ -24,7 +24,7 @@
       "status": "completed",
       "started_at": "2026-09-21T23:37:15+0900",
       "summary": "LLM 없이 도는 규칙 기반 기획안 생성기(src/lib/rule-ideas.ts) — buildRuleIdeas(profile, viral): ContentIdea[]. viral이 비면 빈 배열, 아니면 상위 5개 각각에 인덱스 고정 매칭된 템플릿 5종(조사 없이 끝나는 제목·훅)을 적용. 소재는 myKeyword=searchKeywords[0](없으면 '우리 채널 주제')와 step 0의 extractKeywords로 영상 제목당 최대 3개 뽑은 후보 중 아직 안 쓴 첫 단어(소진·0개면 제목 앞 20자)로 기획안 간 중복 제거. outline은 도입·본편·비교·마무리 4단계 고정, whyNow는 제목(40자 초과 시 말줄임표)+구독자·조회수·배율·일평균을 자체 콤마 헬퍼(toLocaleString 금지)로 찍은 입력 수치만, estimatedMinutes는 avgDurationSec<60이면 [1,2] 아니면 ±20% 반올림에 hi>lo 보장. TDD로 tests/rule-ideas.test.ts 선작성, 24개 추가해 총 168개 통과 (lint·build·test 모두 통과)",
-      "completed_at": "2026-09-21T23:41:20+0900"
+      "completed_at": "2026-09-21T23:42:04+0900"
     },
     {
       "step": 3,
