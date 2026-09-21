@@ -48,7 +48,7 @@
       "status": "completed",
       "started_at": "2026-09-21T22:50:54+0900",
       "summary": "화면 완성 — src/app/page.tsx(\"use client\", idle/loading/success/error 4상태 useState만, POST /api/analyze 호출·non-2xx는 본문 error 표시, useEffect+setInterval 6초 로딩 라벨 5개 마지막 고정·clearInterval 정리, animate-pulse 스켈레톤 3개, viral<3·ideas=[] 안내 문구)와 컴포넌트 4개(AnalyzeForm Enter 제출·로딩 disabled·에러 시 입력값 유지, ChannelProfileCard 파일 내 한국어 단위 축약·mm:ss·지표 4칸, ViralVideoList 배율 #eab308 강조·Shorts 라벨·img 썸네일·새 탭, IdeaCard clipboard 복사 2초 '복사됨'·참고 영상 링크). 테스트 추가 없이 85개 유지 (lint·build·test 모두 통과)",
-      "completed_at": "2026-09-21T22:54:18+0900"
+      "completed_at": "2026-09-21T22:55:15+0900"
     }
   ],
   "created_at": "2026-09-21T22:23:04+0900"
