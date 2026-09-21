@@ -2,11 +2,38 @@
   "project": "TubeNext",
   "phase": "0-mvp",
   "steps": [
-    { "step": 0, "name": "project-setup", "status": "pending" },
-    { "step": 1, "name": "core-types", "status": "pending" },
-    { "step": 2, "name": "youtube-service", "status": "pending" },
-    { "step": 3, "name": "claude-service", "status": "pending" },
-    { "step": 4, "name": "analyze-route", "status": "pending" },
-    { "step": 5, "name": "result-ui", "status": "pending" }
-  ]
+    {
+      "step": 0,
+      "name": "project-setup",
+      "status": "completed",
+      "started_at": "2026-09-21T22:23:04+0900",
+      "summary": "Next.js 15 App Router 골격 구축 — 의존성 설치, tsconfig/next/postcss/eslint/vitest 설정, src/app 레이아웃·플레이스홀더 페이지·globals.css, tests/smoke.test.ts (lint·build·test 모두 통과)"
+    },
+    {
+      "step": 1,
+      "name": "core-types",
+      "status": "pending"
+    },
+    {
+      "step": 2,
+      "name": "youtube-service",
+      "status": "pending"
+    },
+    {
+      "step": 3,
+      "name": "claude-service",
+      "status": "pending"
+    },
+    {
+      "step": 4,
+      "name": "analyze-route",
+      "status": "pending"
+    },
+    {
+      "step": 5,
+      "name": "result-ui",
+      "status": "pending"
+    }
+  ],
+  "created_at": "2026-09-21T22:23:04+0900"
 }
