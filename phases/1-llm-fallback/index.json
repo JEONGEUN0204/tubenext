@@ -64,7 +64,7 @@
       "status": "completed",
       "started_at": "2026-09-22T00:09:51+0900",
       "summary": "빈 상태 문구를 실제 원인에 맞게 분기(src/app/page.tsx만 수정) — 기획안 0개일 때 viral.length===0이면 '참고할 바이럴 영상을 찾지 못해 기획안을 만들지 않았습니다…'(라우트가 근거 없어 의도적으로 건너뛴 경우)를, viral이 있는데 0개면 기존 '기획안 생성에 실패했습니다' 문구를 그대로 띄운다. 바이럴 섹션은 기존 조건(< MIN_VIRAL_SAMPLE)을 유지한 채 viralSampleMessage(count, keywords) 헬퍼로 0개일 때 '최근 30일 안에 조회수 1만 이상인 관련 영상을 찾지 못했습니다.' + 키워드가 있을 때만 ' 검색 키워드: a, b, c'를 덧붙이고, 1~2개면 기존 표본 부족 문구를 쓴다. 문구는 상수 4개(VIRAL_NONE/VIRAL_FEW/IDEAS_SKIPPED/IDEAS_FAILED)로 모으고 헬퍼는 readErrorMessage 옆 모듈 스코프 순수 함수로 뒀다. 클래스는 기존 보조 문구와 동일한 mt-2 text-sm text-neutral-500, 색상·아이콘·배너·재시도 버튼 없음. 상태 4가지·섹션 순서·컴포넌트·로직 무수정, UI 테스트 미추가로 기존 190개 그대로 통과 (lint·build·test 모두 통과)",
-      "completed_at": "2026-09-22T00:11:30+0900"
+      "completed_at": "2026-09-22T00:12:18+0900"
     }
   ],
   "created_at": "2026-09-21T23:27:49+0900"
