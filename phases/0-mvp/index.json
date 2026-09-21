@@ -24,7 +24,7 @@
       "status": "completed",
       "started_at": "2026-09-21T22:33:13+0900",
       "summary": "YouTube Data API v3 래퍼(src/services/youtube.ts) — fetchChannel/fetchRecentVideos/searchViralCandidates 3함수를 fetch로 직접 호출해 도메인 타입으로 정규화, 검색 키워드 3개 제한·id 50개 배치·403→QUOTA_EXCEEDED 매핑. TDD로 tests/youtube.test.ts 선작성, 16개 추가해 총 62개 통과 (lint·build·test 모두 통과)",
-      "completed_at": "2026-09-21T22:37:58+0900"
+      "completed_at": "2026-09-21T22:38:55+0900"
     },
     {
       "step": 3,
