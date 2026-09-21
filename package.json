@@ -1,6 +1,7 @@
 {
-  "name": "harness_framework",
+  "name": "tubenext",
   "version": "1.0.0",
+  "description": "내 유튜브 채널을 분석하고, 같은 주제에서 지금 바이럴한 영상을 근거로 다음에 만들 영상을 추천한다.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,16 +10,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jha0313/harness_framework.git"
+    "url": "git+https://github.com/JEONGEUN0204/tubenext.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "youtube",
+    "content-strategy",
+    "nextjs",
+    "claude"
+  ],
+  "author": "JEONGEUN0204",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jha0313/harness_framework/issues"
+    "url": "https://github.com/JEONGEUN0204/tubenext/issues"
   },
-  "homepage": "https://github.com/jha0313/harness_framework#readme",
-  "description": "",
+  "homepage": "https://github.com/JEONGEUN0204/tubenext#readme",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.127.0",
     "next": "^15.5.25",
