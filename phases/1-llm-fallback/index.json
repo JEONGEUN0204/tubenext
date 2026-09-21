@@ -1,0 +1,12 @@
+{
+  "project": "TubeNext",
+  "phase": "1-llm-fallback",
+  "steps": [
+    { "step": 0, "name": "keyword-extract", "status": "pending" },
+    { "step": 1, "name": "rule-profile", "status": "pending" },
+    { "step": 2, "name": "rule-ideas", "status": "pending" },
+    { "step": 3, "name": "llm-toggle", "status": "pending" },
+    { "step": 4, "name": "fallback-route", "status": "pending" },
+    { "step": 5, "name": "fallback-ui", "status": "pending" }
+  ]
+}
