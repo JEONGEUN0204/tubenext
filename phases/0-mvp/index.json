@@ -29,7 +29,10 @@
     {
       "step": 3,
       "name": "claude-service",
-      "status": "pending"
+      "status": "completed",
+      "started_at": "2026-09-21T22:38:55+0900",
+      "summary": "Anthropic 구조화 출력 래퍼(src/services/claude.ts) — extractProfile(effort low, searchKeywords 3개 슬라이스)/generateIdeas(effort medium, 바이럴 8개 입력·기획안 5개 슬라이스·referenceVideoId 미검증 시 viral[0].id 교체)를 messages.parse + zodOutputFormat으로 구현, 클라이언트는 함수 안 생성, parsed_output null·SDK 예외를 UPSTREAM_ERROR 고정 문구로 마스킹. TDD로 tests/claude.test.ts 선작성(SDK mock + fetch 네트워크 가드), 12개 추가해 총 74개 통과 (lint·build·test 모두 통과)",
+      "completed_at": "2026-09-21T22:45:42+0900"
     },
     {
       "step": 4,
