@@ -7,7 +7,8 @@
       "name": "project-setup",
       "status": "completed",
       "started_at": "2026-09-21T22:23:04+0900",
-      "summary": "Next.js 15 App Router 골격 구축 — 의존성 설치, tsconfig/next/postcss/eslint/vitest 설정, src/app 레이아웃·플레이스홀더 페이지·globals.css, tests/smoke.test.ts (lint·build·test 모두 통과)"
+      "summary": "Next.js 15 App Router 골격 구축 — 의존성 설치, tsconfig/next/postcss/eslint/vitest 설정, src/app 레이아웃·플레이스홀더 페이지·globals.css, tests/smoke.test.ts (lint·build·test 모두 통과)",
+      "completed_at": "2026-09-21T22:28:39+0900"
     },
     {
       "step": 1,
