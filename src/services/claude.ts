@@ -171,6 +171,16 @@ export async function generateIdeas(
   }
 }
 
+/** Claude를 호출해볼 수 있는 상태인지. false면 호출을 건너뛰고 규칙 기반 경로로 간다. */
+export function isLlmEnabled(): boolean {
+  // process.env는 apiKey()와 같은 이유로 모듈 최상위가 아니라 호출 시점에 읽는다.
+  // 최상위에서 읽으면 next build가 모듈을 평가할 때 값이 굳는다.
+  // 수동 스위치다. 값이 없으면 "켜짐"으로 본다.
+  if (process.env.LLM_MODE?.toLowerCase() === "off") return false;
+  // 키가 있는지만 본다. 값 자체는 반환하지도 로그로 남기지도 않는다. (CLAUDE.md CRITICAL)
+  return Boolean(process.env.ANTHROPIC_API_KEY?.trim());
+}
+
 // 클라이언트는 호출 시점에 만든다. 모듈 최상위에서 만들면 키가 없을 때
 // next build가 모듈을 평가하는 단계에서 깨진다.
 // ANTHROPIC_API_KEY는 SDK가 직접 읽는다. 키를 인자로 넘기지 않는다.

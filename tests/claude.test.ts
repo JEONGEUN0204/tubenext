@@ -1,6 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/lib/errors";
-import { extractProfile, generateIdeas } from "@/services/claude";
+import {
+  extractProfile,
+  generateIdeas,
+  isLlmEnabled,
+} from "@/services/claude";
 import type {
   ChannelProfile,
   ChannelSummary,
@@ -300,6 +304,75 @@ describe("services/claude", () => {
       await expect(extractProfile(channel, videos)).rejects.toMatchObject({
         code: "QUOTA_EXCEEDED",
       });
+    });
+  });
+
+  describe("isLlmEnabled", () => {
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it("키가 있고 LLM_MODE가 없으면 true다", () => {
+      vi.stubEnv("ANTHROPIC_API_KEY", "sk-ant-test");
+      vi.stubEnv("LLM_MODE", undefined);
+
+      // 기본값은 "켜짐"이다. 아무것도 설정하지 않은 기존 사용자가 그대로 동작해야 한다.
+      expect(isLlmEnabled()).toBe(true);
+    });
+
+    it("LLM_MODE=off면 키가 있어도 false다", () => {
+      vi.stubEnv("ANTHROPIC_API_KEY", "sk-ant-test");
+      vi.stubEnv("LLM_MODE", "off");
+
+      expect(isLlmEnabled()).toBe(false);
+    });
+
+    it("LLM_MODE=OFF도 대소문자 구분 없이 false다", () => {
+      vi.stubEnv("ANTHROPIC_API_KEY", "sk-ant-test");
+      vi.stubEnv("LLM_MODE", "OFF");
+
+      expect(isLlmEnabled()).toBe(false);
+    });
+
+    it("LLM_MODE=auto면 true다", () => {
+      vi.stubEnv("ANTHROPIC_API_KEY", "sk-ant-test");
+      vi.stubEnv("LLM_MODE", "auto");
+
+      // off가 아닌 값은 전부 켜짐으로 본다.
+      expect(isLlmEnabled()).toBe(true);
+    });
+
+    it("키가 없으면 false다", () => {
+      vi.stubEnv("ANTHROPIC_API_KEY", undefined);
+      vi.stubEnv("LLM_MODE", undefined);
+
+      expect(isLlmEnabled()).toBe(false);
+    });
+
+    it("키가 빈 문자열이면 false다", () => {
+      vi.stubEnv("ANTHROPIC_API_KEY", "");
+      vi.stubEnv("LLM_MODE", undefined);
+
+      expect(isLlmEnabled()).toBe(false);
+    });
+
+    it("키가 공백뿐이면 false다", () => {
+      vi.stubEnv("ANTHROPIC_API_KEY", "   ");
+      vi.stubEnv("LLM_MODE", undefined);
+
+      expect(isLlmEnabled()).toBe(false);
+    });
+
+    it("판정만 하고 Claude를 호출하지 않는다", () => {
+      vi.stubEnv("ANTHROPIC_API_KEY", "sk-ant-test");
+      vi.stubEnv("LLM_MODE", "off");
+
+      isLlmEnabled();
+      vi.stubEnv("LLM_MODE", "auto");
+      isLlmEnabled();
+
+      // 호출 전에 판정하는 함수다. 네트워크(fetchGuard)도 SDK도 타지 않는다.
+      expect(parseMock).not.toHaveBeenCalled();
     });
   });
 });
