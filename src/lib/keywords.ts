@@ -19,8 +19,17 @@ const ONE_CHAR_PARTICLES = [
   "은", "는", "이", "가", "을", "를", "의", "에", "도", "만", "로", "와", "과",
 ];
 
+// 한국 유튜브에서 대괄호는 시리즈·코너 태그 자리다. 안의 내용까지 통째로 버린다.
+// 괄호 안 소재어(`[돼지국밥짬뽕]`)도 같이 날아가지만, 소재어는 대개 괄호 밖에도
+// 나오는 반면 시리즈명은 괄호 안에만 있으면서 빈도가 가장 높다.
+// 소괄호는 부가 설명과 소재어가 섞여 있어 제거 위험이 더 커서 건드리지 않는다.
+const BRACKET_BLOCKS = /\[[^\]]*\]|【[^】]*】|<[^>]*>/g;
+// 닫는 괄호가 없으면 위 패턴이 안 걸린다. 제목 전체가 날아가지 않게 여는 괄호만 버린다.
+const UNCLOSED_BRACKETS = /[[【<]/g;
+
 const NON_TOKEN_CHARS = /[^가-힣a-zA-Z0-9]+/g;
-const DIGITS_ONLY = /^\d+$/;
+// 회차·기간·가격 표기(`2주`, `7천원`)는 주제가 아니라 그 영상 한 편의 사정이다.
+const LEADING_DIGIT = /^\d/;
 const MIN_TOKEN_LENGTH = 2;
 const MIN_STEM_LENGTH = 2;
 const TWO_CHAR_PARTICLE_MIN_LENGTH = 4;
@@ -38,6 +47,8 @@ export interface ExtractOptions {
 /** 제목 1개 → 원시 토큰 배열 (조사 정규화 전) */
 export function tokenizeTitle(title: string): string[] {
   return title
+    .replace(BRACKET_BLOCKS, " ")
+    .replace(UNCLOSED_BRACKETS, " ")
     .replace(NON_TOKEN_CHARS, " ")
     .split(" ")
     .filter((token) => token !== "")
@@ -98,7 +109,7 @@ export function extractKeywords(
 function isKeywordToken(token: string): boolean {
   return (
     token.length >= MIN_TOKEN_LENGTH &&
-    !DIGITS_ONLY.test(token) &&
+    !LEADING_DIGIT.test(token) &&
     !STOPWORDS.has(token)
   );
 }
