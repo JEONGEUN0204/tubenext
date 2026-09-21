@@ -23,6 +23,13 @@ const LAST_LABEL_INDEX = LOADING_LABELS.length - 1;
 const MIN_VIRAL_SAMPLE = 3;
 const NETWORK_ERROR_MESSAGE =
   "서버에 연결하지 못했습니다. 잠시 후 다시 시도해주세요.";
+const VIRAL_NONE_MESSAGE =
+  "최근 30일 안에 조회수 1만 이상인 관련 영상을 찾지 못했습니다.";
+const VIRAL_FEW_MESSAGE = "이 주제는 최근 30일 표본이 적습니다.";
+// 라우트는 근거로 지목할 영상이 없으면 기획안 생성을 건너뛴다. 실패가 아니라 생략이다.
+const IDEAS_SKIPPED_MESSAGE =
+  "참고할 바이럴 영상을 찾지 못해 기획안을 만들지 않았습니다. 이 채널의 검색 키워드로는 최근 30일 안에 조건을 넘는 영상이 없습니다.";
+const IDEAS_FAILED_MESSAGE = "기획안 생성에 실패했습니다. 다시 시도해주세요.";
 
 export default function Home() {
   const [status, setStatus] = useState<Status>("idle");
@@ -127,7 +134,10 @@ export default function Home() {
             <h2 className="text-sm font-medium text-neutral-400">바이럴 영상</h2>
             {result.viral.length < MIN_VIRAL_SAMPLE && (
               <p className="mt-2 text-sm text-neutral-500">
-                이 주제는 최근 30일 표본이 적습니다.
+                {viralSampleMessage(
+                  result.viral.length,
+                  result.profile.searchKeywords,
+                )}
               </p>
             )}
             <div className="mt-3">
@@ -152,7 +162,9 @@ export default function Home() {
             )}
             {result.ideas.length === 0 ? (
               <p className="mt-2 text-sm text-neutral-500">
-                기획안 생성에 실패했습니다. 다시 시도해주세요.
+                {result.viral.length === 0
+                  ? IDEAS_SKIPPED_MESSAGE
+                  : IDEAS_FAILED_MESSAGE}
               </p>
             ) : (
               <div className="mt-3 flex flex-col gap-3">
@@ -166,6 +178,14 @@ export default function Home() {
       )}
     </main>
   );
+}
+
+// 0개와 1~2개는 사용자가 할 일이 다르다. 0개면 실제로 검색에 쓴 말을 같이 보여준다.
+// 키워드가 엉뚱했던 것인지 주제 자체가 조용한 것인지는 그걸 봐야 구분된다.
+function viralSampleMessage(count: number, keywords: string[]): string {
+  if (count > 0) return VIRAL_FEW_MESSAGE;
+  if (keywords.length === 0) return VIRAL_NONE_MESSAGE;
+  return `${VIRAL_NONE_MESSAGE} 검색 키워드: ${keywords.join(", ")}`;
 }
 
 // 라우트 핸들러는 실패를 { error: string }으로 돌려준다.
