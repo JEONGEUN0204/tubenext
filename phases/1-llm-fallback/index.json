@@ -37,7 +37,10 @@
     {
       "step": 4,
       "name": "fallback-route",
-      "status": "pending"
+      "status": "completed",
+      "started_at": "2026-09-21T23:45:46+0900",
+      "summary": "라우트를 규칙 기반 폴백에 연결(src/app/api/analyze/route.ts) — 요청 시작 시 isLlmEnabled()를 한 번 호출해 false면 Claude를 건너뛰고, extractProfile/generateIdeas 실패는 삼켜 buildRuleProfile·buildRuleIdeas로 대체하며 원본 에러는 console.error로만 남긴다. 실패 기록(claudeAlive)은 요청 하나 안에서만 살아서 첫 실패 후 남은 Claude 호출을 건너뛰고, viral이 비면 호출 없이 규칙 경로(빈 배열)로 간다. 값을 만든 자리에서 mode를 함께 들고 나오는 Step<T> 헬퍼로 AnalyzeResponse에 mode: AnalysisModes(types/index.ts에 AnalysisMode·AnalysisModes 추가, mode 필수 필드)를 채운다. YouTube 에러·MIN_VIDEO_COUNT·STATUS_BY_CODE·ErrorCode는 그대로. TDD로 tests/analyze-route.test.ts 선수정(isLlmEnabled mock 추가·기본 true, 기존 3개 수정: 키 5개+mode llm/llm, 502는 fetchRecentVideos 실패로 교체, generateIdeas 실패는 규칙 기획안), 폴백 7개 추가해 총 183개 통과 (lint·build·test 모두 통과)",
+      "completed_at": "2026-09-21T23:51:00+0900"
     },
     {
       "step": 5,

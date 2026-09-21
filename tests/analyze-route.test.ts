@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/analyze/route";
 import { AppError } from "@/lib/errors";
-import { extractProfile, generateIdeas } from "@/services/claude";
+import { buildRuleProfile } from "@/lib/rule-profile";
+import { extractProfile, generateIdeas, isLlmEnabled } from "@/services/claude";
 import {
   fetchChannel,
   fetchRecentVideos,
@@ -25,6 +26,7 @@ vi.mock("@/services/youtube", () => ({
 vi.mock("@/services/claude", () => ({
   extractProfile: vi.fn(),
   generateIdeas: vi.fn(),
+  isLlmEnabled: vi.fn(),
 }));
 
 const fetchChannelMock = vi.mocked(fetchChannel);
@@ -32,6 +34,7 @@ const fetchRecentVideosMock = vi.mocked(fetchRecentVideos);
 const searchViralCandidatesMock = vi.mocked(searchViralCandidates);
 const extractProfileMock = vi.mocked(extractProfile);
 const generateIdeasMock = vi.mocked(generateIdeas);
+const isLlmEnabledMock = vi.mocked(isLlmEnabled);
 
 const channel: ChannelSummary = {
   id: "UCme",
@@ -52,6 +55,16 @@ function video(index: number): VideoStat {
 }
 
 const videos: VideoStat[] = [1, 2, 3, 4, 5, 6].map(video);
+
+// 규칙 기반 폴백은 제목에서 키워드를 실제로 뽑는다. `내 영상 N`에서는 한 개도 안 나온다.
+const ruleVideos: VideoStat[] = [
+  "자취 김치찌개 끓이기",
+  "자취 김치찌개 다시 끓이기",
+  "자취 된장찌개 끓이기",
+  "자취 된장찌개 맛있게",
+  "혼밥 라면 끓이기",
+  "혼밥 김밥 싸기",
+].map((title, i) => ({ ...video(i + 1), title }));
 
 const core: ProfileCore = {
   niche: "1인가구 자취요리 · 저예산 간편식",
@@ -118,6 +131,8 @@ describe("POST /api/analyze", () => {
     extractProfileMock.mockResolvedValue(core);
     searchViralCandidatesMock.mockResolvedValue(candidates);
     generateIdeasMock.mockResolvedValue(ideas);
+    // 기본은 LLM이 살아 있는 상태다. 폴백 테스트에서만 끈다.
+    isLlmEnabledMock.mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -126,7 +141,7 @@ describe("POST /api/analyze", () => {
     vi.restoreAllMocks();
   });
 
-  it("정상 흐름이면 200과 네 개의 키를 돌려준다", async () => {
+  it("정상 흐름이면 200과 다섯 개의 키를 돌려준다", async () => {
     const res = await POST(post({ handle: "@jachwi" }));
     const body = await res.json();
 
@@ -134,11 +149,13 @@ describe("POST /api/analyze", () => {
     expect(Object.keys(body).sort()).toEqual([
       "channel",
       "ideas",
+      "mode",
       "profile",
       "viral",
     ]);
     expect(body.channel).toEqual(channel);
     expect(body.ideas).toEqual(ideas);
+    expect(body.mode).toEqual({ profile: "llm", ideas: "llm" });
   });
 
   it("프로필은 Claude 추출 결과와 업로드 통계를 합친 값이다", async () => {
@@ -230,8 +247,9 @@ describe("POST /api/analyze", () => {
   });
 
   it("업스트림 에러는 502를 돌려준다", async () => {
-    extractProfileMock.mockRejectedValue(
-      new AppError("UPSTREAM_ERROR", "콘텐츠 분석에 실패했습니다."),
+    // YouTube 실패는 폴백 대상이 아니다. 채널 데이터가 없으면 규칙 기반으로도 만들 게 없다.
+    fetchRecentVideosMock.mockRejectedValue(
+      new AppError("UPSTREAM_ERROR", "YouTube 응답을 읽지 못했습니다."),
     );
 
     const res = await POST(post({ handle: "@jachwi" }));
@@ -244,7 +262,7 @@ describe("POST /api/analyze", () => {
     );
   });
 
-  it("generateIdeas만 실패하면 200에 빈 ideas로 돌려준다", async () => {
+  it("generateIdeas만 실패하면 200에 규칙 기반 기획안으로 돌려준다", async () => {
     generateIdeasMock.mockRejectedValue(new Error("Claude 500"));
 
     const res = await POST(post({ handle: "@jachwi" }));
@@ -252,7 +270,7 @@ describe("POST /api/analyze", () => {
 
     // 여기까지 오면 YouTube 할당량을 이미 썼다. 나머지 결과는 살린다.
     expect(res.status).toBe(200);
-    expect(body.ideas).toEqual([]);
+    expect(body.ideas.length).toBeGreaterThan(0);
     expect(body.channel).toEqual(channel);
     expect(body.viral).toHaveLength(2);
   });
@@ -271,5 +289,109 @@ describe("POST /api/analyze", () => {
       code: "UPSTREAM_ERROR",
     });
     expect(JSON.stringify(body)).not.toContain("SECRET_API_KEY");
+  });
+
+  describe("LLM 폴백", () => {
+    it("isLlmEnabled()가 false면 Claude를 한 번도 호출하지 않는다", async () => {
+      isLlmEnabledMock.mockReturnValue(false);
+      fetchRecentVideosMock.mockResolvedValue(ruleVideos);
+
+      const res = await POST(post({ handle: "@jachwi" }));
+      const body = await res.json();
+
+      expect(res.status).toBe(200);
+      expect(extractProfileMock).not.toHaveBeenCalled();
+      expect(generateIdeasMock).not.toHaveBeenCalled();
+      expect(body.mode).toEqual({ profile: "rule", ideas: "rule" });
+      expect(body.profile.searchKeywords.length).toBeGreaterThan(0);
+      expect(body.ideas.length).toBeGreaterThan(0);
+    });
+
+    it("extractProfile이 실패하면 200에 규칙 프로필을 돌려준다", async () => {
+      extractProfileMock.mockRejectedValue(
+        new AppError("UPSTREAM_ERROR", "콘텐츠 분석에 실패했습니다."),
+      );
+      fetchRecentVideosMock.mockResolvedValue(ruleVideos);
+
+      const res = await POST(post({ handle: "@jachwi" }));
+      const body = await res.json();
+
+      expect(res.status).toBe(200);
+      expect(body.mode.profile).toBe("rule");
+      expect(body.profile.niche).not.toBe(core.niche);
+      // 통계는 프로필이 LLM이든 규칙이든 똑같이 붙는다.
+      expect(body.profile.avgViews).toBe(35_000);
+    });
+
+    it("Claude가 한 번 실패하면 같은 요청의 남은 호출을 건너뛴다", async () => {
+      extractProfileMock.mockRejectedValue(new Error("크레딧이 소진되었습니다"));
+      fetchRecentVideosMock.mockResolvedValue(ruleVideos);
+
+      const res = await POST(post({ handle: "@jachwi" }));
+      const body = await res.json();
+
+      expect(generateIdeasMock).not.toHaveBeenCalled();
+      expect(body.mode).toEqual({ profile: "rule", ideas: "rule" });
+      // 원본 실패 메시지는 서버 로그에만 남는다.
+      expect(JSON.stringify(body)).not.toContain("크레딧이 소진");
+    });
+
+    it("extractProfile 폴백 후에도 규칙 기반 키워드로 바이럴 검색이 이어진다", async () => {
+      extractProfileMock.mockRejectedValue(new Error("Claude 401"));
+      fetchRecentVideosMock.mockResolvedValue(ruleVideos);
+
+      const res = await POST(post({ handle: "@jachwi" }));
+      const body = await res.json();
+
+      const ruleKeywords = buildRuleProfile(channel, ruleVideos).searchKeywords;
+      expect(ruleKeywords.length).toBeGreaterThan(0);
+      expect(searchViralCandidatesMock).toHaveBeenCalledWith(ruleKeywords);
+      expect(body.profile.searchKeywords).toEqual(ruleKeywords);
+      expect(body.viral).toHaveLength(2);
+    });
+
+    it("generateIdeas만 실패하면 mode가 llm·rule이고 기획안이 채워진다", async () => {
+      generateIdeasMock.mockRejectedValue(new Error("Claude 529"));
+
+      const res = await POST(post({ handle: "@jachwi" }));
+      const body = await res.json();
+
+      expect(body.mode).toEqual({ profile: "llm", ideas: "rule" });
+      expect(body.ideas.length).toBeGreaterThan(0);
+
+      const viralIds = body.viral.map((v: { id: string }) => v.id);
+      for (const idea of body.ideas as ContentIdea[]) {
+        expect(viralIds).toContain(idea.referenceVideoId);
+      }
+    });
+
+    it("viral이 비면 generateIdeas를 호출하지 않고 ideas가 빈 배열이다", async () => {
+      searchViralCandidatesMock.mockResolvedValue([]);
+
+      const res = await POST(post({ handle: "@jachwi" }));
+      const body = await res.json();
+
+      expect(res.status).toBe(200);
+      expect(generateIdeasMock).not.toHaveBeenCalled();
+      expect(body.viral).toEqual([]);
+      expect(body.ideas).toEqual([]);
+      expect(body.mode).toEqual({ profile: "llm", ideas: "rule" });
+    });
+
+    it("후보가 전부 필터에 걸려도 generateIdeas를 호출하지 않는다", async () => {
+      // rankViral의 최소 조회수 기준(10,000)에 못 미치는 후보들.
+      searchViralCandidatesMock.mockResolvedValue([
+        candidate("small1", { viewCount: 500 }),
+        candidate("small2", { viewCount: 900 }),
+      ]);
+
+      const res = await POST(post({ handle: "@jachwi" }));
+      const body = await res.json();
+
+      expect(generateIdeasMock).not.toHaveBeenCalled();
+      expect(body.viral).toEqual([]);
+      expect(body.ideas).toEqual([]);
+      expect(body.mode.ideas).toBe("rule");
+    });
   });
 });
